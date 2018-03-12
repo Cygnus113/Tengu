@@ -75,6 +75,7 @@ namespace Tengu.Network
             return body;
         }
 
+        #region Add Values
         public void AddStringUTF8(string data)
         {
             byte[] header = new byte[1];
@@ -87,38 +88,48 @@ namespace Tengu.Network
             BodyBuilder.Add(len);
             BodyBuilder.Add(stringData);
         }
-        public void AddValue(object data)
+        public void AddValue(short data)
         {
-            byte[] numBytes;
-            byte[] header;
-            switch (data)
-            {
-                case Int16 a:
-                    header = new byte[] { (int)DataType.Int16 }; 
-                    numBytes = BitConverter.GetBytes(a);
-                    break;
-                case Int32 b:
-                    header = new byte[] { (int)DataType.Int32 };
-                    numBytes = BitConverter.GetBytes(b);
-                    break;
-                case Int64 c:
-                    header = new byte[] { (int)DataType.Int64 };
-                    numBytes = BitConverter.GetBytes(c);
-                    break;
-                case float d:
-                    header = new byte[] { (int)DataType.Float };
-                    numBytes = BitConverter.GetBytes(d);
-                    break;
-                case Double e:
-                    header = new byte[] { (int)DataType.Double };
-                    numBytes = BitConverter.GetBytes(e);
-                    break;
-                default:
-                    throw new NotSupportedException("This Numeric is not supported");
-            }
+            byte[] header = new byte[] { (int)DataType.Int16 };
+            byte[] numBytes = BitConverter.GetBytes(data);
+
             BodyBuilder.Add(header);
             BodyBuilder.Add(numBytes);
         }
+        public void AddValue(int data)
+        {
+            byte[] header = new byte[] { (int)DataType.Int32 };
+            byte[] numBytes = BitConverter.GetBytes(data);
+
+            BodyBuilder.Add(header);
+            BodyBuilder.Add(numBytes);
+        }
+        public void AddValue(long data)
+        {
+            byte[] header = new byte[] { (int)DataType.Int64 };
+            byte[] numBytes = BitConverter.GetBytes(data);
+
+            BodyBuilder.Add(header);
+            BodyBuilder.Add(numBytes);
+        }
+        public void AddValue(float data)
+        {
+            byte[] header = new byte[] { (int)DataType.Float };
+            byte[] numBytes = BitConverter.GetBytes(data);
+
+            BodyBuilder.Add(header);
+            BodyBuilder.Add(numBytes);
+        }
+        public void AddValue(double data)
+        {
+            byte[] header = new byte[] { (int)DataType.Double };
+            byte[] numBytes = BitConverter.GetBytes(data);
+
+            BodyBuilder.Add(header);
+            BodyBuilder.Add(numBytes);
+        }
+        #endregion
+        #region Read Values
         public void ReadHeader()
         {
             BaseID = ReadShort();
@@ -136,7 +147,6 @@ namespace Tengu.Network
 
             return values;
         }
-
         private object ReadValue()
         {
             DataType valueType = (DataType)Body[ReadIndex];
@@ -198,7 +208,7 @@ namespace Tengu.Network
         }
         private double ReadDouble()
         {
-            double number = BitConverter.ToInt64(Body, ReadIndex);
+            double number = BitConverter.ToDouble(Body, ReadIndex);
             ReadIndex += 8;
             return number;
         }
@@ -222,5 +232,6 @@ namespace Tengu.Network
 
             return value;
         }
+        #endregion
     }
 }

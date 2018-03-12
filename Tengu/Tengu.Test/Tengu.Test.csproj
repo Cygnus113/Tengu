@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tengu.Network\Tengu.Network.csproj" />
+    <ProjectReference Include="..\Tengu\Tengu.csproj" />
   </ItemGroup>
 
 </Project>

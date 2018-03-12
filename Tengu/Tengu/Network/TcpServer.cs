@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using Tengu.Utility;
 
@@ -114,8 +112,8 @@ namespace Tengu.Network
             if (bytesRead > 0)
             {
                 // Copy data from client buffer to packet body
-                Buffer.BlockCopy(client.buffer, 6, client.Packet.Body,
-                    0, bytesRead - 6);
+                Buffer.BlockCopy(client.buffer, 0, client.Packet.Body,
+                    0, bytesRead);
 
                 // If we have the ID's and the length loaded into Packet Body, read them
                 if (bytesRead >= 6)
