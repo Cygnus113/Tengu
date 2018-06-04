@@ -129,8 +129,11 @@ namespace Tengu.Network
                 }
             }
             // Continue recieving data again from this client
-            handler.BeginReceive(client.buffer, 0, ClientState.BufferSize,
-                0, new AsyncCallback(ReadCallback), client);
+            if (handler.Connected)
+            {
+                handler.BeginReceive(client.buffer, 0, ClientState.BufferSize,
+                    0, new AsyncCallback(ReadCallback), client);
+            }
         }
         protected virtual void HandleMessage(Packet packet)
         {

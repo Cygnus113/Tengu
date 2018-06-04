@@ -130,12 +130,15 @@ namespace Tengu.Network
         }
         #endregion
         #region Read Values
+        // Read the IDs and the Lenghth of the packet
         public void ReadHeader()
         {
+            ReadIndex = 0;
             BaseID = ReadShort();
             SubID = ReadShort();
             Length = ReadShort();
         }
+        // Read all the values in a packet
         public List<object> Read()
         {
             List<object> values = new List<object>();
@@ -147,6 +150,7 @@ namespace Tengu.Network
 
             return values;
         }
+        // Read a specific value at ReadIndex
         private object ReadValue()
         {
             DataType valueType = (DataType)Body[ReadIndex];
