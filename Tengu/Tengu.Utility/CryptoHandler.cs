@@ -9,7 +9,7 @@ namespace Tengu.Utility
     {
         private const int SaltByteSize = 32;
         private const int HashByteSize = 32;
-        private const int HasingIterationsCount = 10101;
+        private const int HashingIterationsCount = 10101;
 
         public byte[] GenerateSalt(int saltByteSize = SaltByteSize)
         {
@@ -20,7 +20,7 @@ namespace Tengu.Utility
                 return salt;
             }
         }
-        public byte[] ComputeHash(string password, byte[] salt, int iterations = HasingIterationsCount, int hashByteSize = HashByteSize)
+        public byte[] ComputeHash(string password, byte[] salt, int iterations = HashingIterationsCount, int hashByteSize = HashByteSize)
         {
             using (Rfc2898DeriveBytes hashGenerator = new Rfc2898DeriveBytes(password, salt))
             {

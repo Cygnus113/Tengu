@@ -14,17 +14,26 @@ namespace Tengu.Network
         {
             ActionDictionary = new Dictionary<Tuple<short, short>, Action<Packet>>();
         }
-        protected void RegisterAction(short BaseID, short SubID, Action<Packet> method)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="BaseID"></param>
+        /// <param name="SubID"></param>
+        /// <param name="method"></param>
+        protected void RegisterAction(short baseID, short subID, Action<Packet> method)
         {
-            Tuple<short, short> key = Tuple.Create(BaseID, SubID);
+            Tuple<short, short> key = Tuple.Create(baseID, subID);
             ActionDictionary.Add(key, method);
         }
+        /// <summary>
+        /// Invoke the method of a given packet
+        /// </summary>
+        /// <param name="packet"></param>
         public void Invoke(Packet packet)
         {
-            // Get and then invoke the action mapped to this packet
             GetAction(packet).Invoke();
         }
-        public Action GetAction(Packet packet)
+        private Action GetAction(Packet packet)
         {
             // Create the Tuple key and get the action
             Tuple<short, short> key = Tuple.Create(packet.BaseID, packet.SubID);
