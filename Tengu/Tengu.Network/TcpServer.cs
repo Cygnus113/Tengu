@@ -6,7 +6,6 @@ using Tengu.Utility;
 
 namespace Tengu.Network
 {
-    // Base class for Asynchronous TCP servers
     public class TcpServer
     {
         // A nested class used for reading client data asynchronously
@@ -18,7 +17,7 @@ namespace Tengu.Network
             public const int BufferSize = 1024;
             // Receive buffer.  
             public byte[] buffer = new byte[BufferSize];
-            // Packet Recieved
+            // Send / Recieve network data in this class
             public Packet Packet = new Packet();
         }
 
@@ -31,18 +30,30 @@ namespace Tengu.Network
         protected string Tag;
 
         // Is server running
-        protected bool Running;
+        public bool Running { private set; get; }
 
-        public TcpServer(string Tag = "Tengu")
+        public TcpServer(string Tag = "Tengu TCP")
         {
+            // TODO: Add better configuration options
             // Name of Server
             this.Tag = Tag;
         }
         public void StartServer(int localPort, string localAddressString)
         {
-            IPAddress localAddress = IPAddress.Parse(localAddressString);
+            IPAddress localAddress = null;
 
-            ConsoleHelper.WriteLine(Tag + " Server is starting on port " + localPort, true);
+            try
+            {
+                localAddress = IPAddress.Parse(localAddressString);
+            }
+            catch (Exception)
+            {
+                ConsoleHelper.WriteLine("Cannot start Server: Invalid IP Address", false);
+                throw;
+            }
+
+
+            ConsoleHelper.WriteLine(Tag + " Server is starting on port " + localPort + ", address: " + localAddress, true);
             Running = true;
 
             // Establish local endpoint
@@ -80,7 +91,7 @@ namespace Tengu.Network
                 Console.WriteLine(e.ToString());
             }
         }
-        protected void AcceptCallback(IAsyncResult ar)
+        protected virtual void AcceptCallback(IAsyncResult ar)
         {
             // Signal the main thread to continue.  
             AllDone.Set();
@@ -92,8 +103,10 @@ namespace Tengu.Network
             // Create the ClientState object and begin recieving data 
             ClientState client = new ClientState();
             client.WorkSocket = handler;
+
             handler.BeginReceive(client.buffer, 0, ClientState.BufferSize,
-                0, new AsyncCallback(ReadCallback), client);
+            0, new AsyncCallback(ReadCallback), client);
+
             OnClientConnect(client);
         }
         protected virtual void OnClientConnect(ClientState client )

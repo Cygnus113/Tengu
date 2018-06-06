@@ -24,9 +24,11 @@ namespace Tengu.Network
 
         public Packet()
         {
-            // Arbitrary value to accommodate incoming data
+            // Max packet size, to accommodate incoming data
             Body = new byte[BufferLength];
+            // List of data that will be added to the packet
             BodyBuilder = new List<byte[]>();
+            // Where we are in the buffer, for reading purposes
             ReadIndex = 0;
         }
         public byte[] Compose()
@@ -40,11 +42,11 @@ namespace Tengu.Network
 
             // Get total length of packet
             short totalLength = (short)(6 + Body.Length);
+            // Get bytes of Packet Length short
+            byte[] lengthBytes = BitConverter.GetBytes(totalLength);
 
             // Allocate byte[] for the packet data
             byte[] packetBytes = new byte[totalLength];
-            // Get bytes of Packet Length short
-            byte[] lengthBytes = BitConverter.GetBytes(totalLength);
 
             // Copy data into outgoing packetByte
             Buffer.BlockCopy(baseBytes, 0, packetBytes, 0, 2);

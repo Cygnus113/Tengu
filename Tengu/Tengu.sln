@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tengu.Network", "Tengu.Netw
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tengu.Test", "Tengu.Test\Tengu.Test.csproj", "{BF6BE37F-E1CF-4758-BBB6-CDB36342654E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tengu.Integration", "Tengu.Integration\Tengu.Integration.csproj", "{F52BE059-AEDE-4F01-A0F8-3A448FAED3DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{BF6BE37F-E1CF-4758-BBB6-CDB36342654E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF6BE37F-E1CF-4758-BBB6-CDB36342654E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF6BE37F-E1CF-4758-BBB6-CDB36342654E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F52BE059-AEDE-4F01-A0F8-3A448FAED3DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F52BE059-AEDE-4F01-A0F8-3A448FAED3DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F52BE059-AEDE-4F01-A0F8-3A448FAED3DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F52BE059-AEDE-4F01-A0F8-3A448FAED3DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
