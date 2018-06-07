@@ -6,7 +6,8 @@ namespace Tengu.Integration
     {
         static void Main(string[] args)
         {
-            WebSocketServer w = new WebSocketServer();
+            WebSocketTestServer w = new WebSocketTestServer();
+            w.StartServer(w.port, w.address);
         }
     }
 }

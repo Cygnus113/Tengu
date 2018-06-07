@@ -196,6 +196,12 @@ namespace Tengu.Network
             client.BeginSend(byteData, 0, byteData.Length, 0,
                 new AsyncCallback(SendCallback), client);
         }
+        public void Send(Socket client, byte[] byteData)
+        {
+            // Begin sending data
+            client.BeginSend(byteData, 0, byteData.Length, 0,
+                new AsyncCallback(SendCallback), client);
+        }
         protected void SendCallback(IAsyncResult ar)
         {
             try
