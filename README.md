@@ -1,2 +1,2 @@
 # Tengu
-An asynchronous TCP, UDP, and Websocket Networking framework for server and client applications.
+An asynchronous TCP and Websocket Networking framework for client and server applications.
