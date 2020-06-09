@@ -1,16 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using Tengu.Network.Events;
 
 namespace Tengu.Network
 {
-    public class TenguSocket : ISocket
+    public class TenguSocket
     {
         public bool Running { get; private set; } = false;
 
@@ -80,7 +79,6 @@ namespace Tengu.Network
                 throw;
             }
         }
-
         public virtual void EndAccept(IAsyncResult ar)
         {
             // Signal the main thread to continue.  
@@ -92,16 +90,18 @@ namespace Tengu.Network
 
             // Create the ClientState object and begin recieving data 
             ClientState client = new ClientState();
-            client.WorkSocket = handler;
             client.Packet.RawValues = new byte[ClientState.BufferSize];
-
-            handler.BeginReceive(client.buffer, 0, ClientState.BufferSize,
-            0, new AsyncCallback(EndReceive), client);
+            client.WorkSocket = handler;
 
             InvokeOnClientConnect(client);
+            BeginRead(client);
         }
-
-        public void EndReceive(IAsyncResult ar)
+        public void BeginRead(ClientState client)
+        {
+            client.WorkSocket.BeginReceive(client.buffer, 0, ClientState.BufferSize,
+            0, new AsyncCallback(EndRead), client);
+        }
+        public void EndRead(IAsyncResult ar)
         {
             // Get ClientState and Socket from Async Result
             ClientState client = (ClientState)ar.AsyncState;
@@ -126,30 +126,77 @@ namespace Tengu.Network
             // Continue recieving data again from this client
             if (handler.Connected)
             {
-                handler.BeginReceive(client.buffer, 0, ClientState.BufferSize, 0, new AsyncCallback(EndReceive), client);
+                handler.BeginReceive(client.buffer, 0, ClientState.BufferSize, 0, new AsyncCallback(EndRead), client);
             }
         }
-
-        public void BeginConnect()
+        internal void BeginConnect(string ip, int serverPort, ref Socket outSocket)
         {
-            throw new NotImplementedException();
-        }
+            // Get IP Address
+            IPAddress ipAddress = IPAddress.Parse(ip.Trim());
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, serverPort);
 
-        public void EndConnect(IAsyncResult ar)
+            // Save the socket for user reference later  
+            outSocket = new Socket(ipAddress.AddressFamily,
+                SocketType.Stream, ProtocolType.Tcp);
+
+            // Connect to the remote endpoint.  
+            outSocket.BeginConnect(remoteEP,
+                new AsyncCallback(EndConnect), outSocket);
+            _connectDone.WaitOne();
+        }
+        internal void EndConnect(IAsyncResult ar)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                // Retrieve the socket from the StateObject.  
+                Socket client = (Socket)ar.AsyncState;
 
-        public void BeginSend()
+                // Complete the connection.  
+                client.EndConnect(ar);
+
+                Console.WriteLine("Connected to Remote Endpoint",
+                    client.RemoteEndPoint.ToString());
+
+                // Signal that the connection has been made.  
+                _connectDone.Set();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
+        internal void BeginWrite(Socket client, Packet packet)
         {
-            throw new NotImplementedException();
+            // Get bytes of packet
+            var byteData = packet.BuildPacketBody();
+            // Begin sending data
+            client.BeginSend(byteData, 0, byteData.Length, 0,
+                new AsyncCallback(EndWrite), client);
         }
-
-        public void EndSend()
+        internal void BeginWrite(Socket client, byte[] byteData)
         {
-            throw new NotImplementedException();
+            // Begin sending data
+            client.BeginSend(byteData, 0, byteData.Length, 0,
+                new AsyncCallback(EndWrite), client);
         }
+        internal void EndWrite(IAsyncResult ar)
+        {
+            try
+            {
+                // Retrieve the socket from the state object.  
+                Socket client = (Socket)ar.AsyncState;
 
+                // Complete sending the data to the remote device.  
+                int bytesSent = client.EndSend(ar);
+
+                // Signal that all bytes have been sent.  
+                _sendDone.Set();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
         private void InvokeOnMessage(Packet packet, ClientState client)
         {
             PacketEventArgs args = new PacketEventArgs();
@@ -157,7 +204,6 @@ namespace Tengu.Network
             args.Client = client;
             OnMessage.Invoke(this, args);
         }
-
         private void InvokeOnClientConnect(ClientState client)
         {
             PacketEventArgs args = new PacketEventArgs();
