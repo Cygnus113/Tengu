@@ -129,7 +129,7 @@ namespace Tengu.Network
                 handler.BeginReceive(client.buffer, 0, ClientState.BufferSize, 0, new AsyncCallback(EndRead), client);
             }
         }
-        internal void BeginConnect(string ip, int serverPort, ref Socket outSocket)
+        public void BeginConnect(string ip, int serverPort, ref Socket outSocket)
         {
             // Get IP Address
             IPAddress ipAddress = IPAddress.Parse(ip.Trim());

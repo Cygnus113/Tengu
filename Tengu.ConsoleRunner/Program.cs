@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Net.Sockets;
 using Tengu.Network;
 using Tengu.Network.Events;
 
@@ -26,11 +27,22 @@ namespace Tengu.ConsoleRunner
                 case "host":
                     RunAsHost();
                     break;
+                case "client":
+                    RunAsClient();
+                    break;
                 default:
                     break;
             }
+
+            Console.ReadLine();
         }
 
+        private static void RunAsClient()
+        {
+            Socket refSock = null;
+            var socket = new TenguSocket(_logger);
+            socket.BeginConnect("127.0.0.1", 57005, ref refSock);
+        }
         private static void RunAsHost()
         {
             var socket = new TenguSocket(_logger);
